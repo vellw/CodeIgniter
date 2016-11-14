@@ -1,0 +1,32 @@
+lnmp 环境下需要注意3个配置文件：
+1. php-fpm -> php.ini -> fix_path_info = 1
+2. nginx.conf ->
+        server {
+                listen       80;
+                server_name  localhost;
+                root   /var/www/html/ci;
+                autoindex on;
+                index index.php;
+
+                location / {
+
+                    try_files $uri $uri/ /index.php;
+
+                    location = /index.php {
+
+                        fastcgi_pass   127.0.0.1:6969;
+                        fastcgi_param  SCRIPT_FILENAME /var/www/html/ci$fastcgi_script_name;
+                        include        fastcgi_params;
+                    }
+                }
+
+                location ~ \.php$ {
+                    return 444;
+                }
+
+
+        }
+3. application/config/config.php
+        $config['base_url'] = "";
+        $config['index_page']       = "";
+        $config['uri_protocol']     = "AUTO";
